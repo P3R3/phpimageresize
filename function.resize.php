@@ -1,6 +1,6 @@
 <?php
 
-require 'ImagePath.php';
+require 'HttpUrlImage.php';
 require 'Configuration.php';
 require 'Resizer.php';
 
@@ -22,11 +22,11 @@ function isInCache($path, $imagePath) {
 	return $isInCache;
 }
 
-function composeNewPath($imagePath, $configuration) {
+function composeNewPath($sourceFilePath, $configuration) {
 	$w = $configuration->obtainWidth();
 	$h = $configuration->obtainHeight();
-	$filename = md5_file($imagePath);
-	$finfo = pathinfo($imagePath);
+	$filename = md5_file($sourceFilePath);
+	$finfo = pathinfo($sourceFilePath);
 	$ext = $finfo['extension'];
 
 	$cropSignal = isset($opts['crop']) && $opts['crop'] == true ? "_cp" : "";
@@ -127,10 +127,10 @@ function doResize($imagePath, $newPath, $configuration) {
 	}
 }
 
-function resize($imagePath,$opts=null){
+function resize($urlImage,$opts=null){
 
 
-	$path = new ImagePath($imagePath);
+	$httpUrlImage = new HttpUrlImage($urlImage);
 
 	try {
 		$configuration = new Configuration($opts);
@@ -138,24 +138,24 @@ function resize($imagePath,$opts=null){
 		return 'cannot resize the image';
 	}
 
-	$resizer = new Resizer($path, $configuration);
+	$resizer = new Resizer($httpUrlImage, $configuration);
 
 	// This has to be done in resizer resize
 
 	try {
-		$imagePath = $resizer->obtainFilePath();
+		$sourceFilePath = $resizer->obtainFilePath();
 	} catch (Exception $e) {
 		return 'image not found';
 	}
 
 
-	$newPath = composeNewPath($imagePath, $configuration);
+	$newPath = composeNewPath($sourceFilePath, $configuration);
 
-    $create = !isInCache($newPath, $imagePath);
+    $create = !isInCache($newPath, $sourceFilePath);
 
 	if($create == true):
 		try {
-			doResize($imagePath, $newPath, $configuration);
+			doResize($sourceFilePath, $newPath, $configuration);
 		} catch (Exception $e) {
 			return 'cannot resize the image';
 		}

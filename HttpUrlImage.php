@@ -1,16 +1,16 @@
 <?php
 
-class ImagePath {
+class HttpUrlImage {
 
-    private $path;
+    private $url;
     private $valid_http_protocols = array('http', 'https');
 
     public function __construct($url='') {
-        $this->path = $this->sanitize($url);
+        $this->url = $this->sanitize($url);
     }
 
     public function sanitizedPath() {
-        return $this->path;
+        return $this->url;
     }
 
     public function isHttpProtocol() {
@@ -18,7 +18,7 @@ class ImagePath {
     }
 
     public function obtainFileName() {
-        $finfo = pathinfo($this->path);
+        $finfo = pathinfo($this->url);
         list($filename) = explode('?',$finfo['basename']);
         return $filename;
     }
@@ -28,8 +28,8 @@ class ImagePath {
     }
 
     private function obtainScheme() {
-        if ($this->path == '') return '';
-        $purl = parse_url($this->path);
+        if ($this->url == '') return '';
+        $purl = parse_url($this->url);
         return $purl['scheme'];
     }
 }

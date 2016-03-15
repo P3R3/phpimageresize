@@ -1,10 +1,10 @@
 <?php
 
 
-require_once 'function.resize.php';
+require_once 'Configuration.php';
 require_once 'TestUtils.php';
 
-class FunctionResizeTest extends PHPUnit_Framework_TestCase {
+class ConfigurationTest extends PHPUnit_Framework_TestCase {
 
 
     private $defaults = array(

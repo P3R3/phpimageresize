@@ -4,15 +4,15 @@ require 'FileSystem.php';
 
 class Resizer {
 
-    private $path;
+    private $httpUrlImage;
     private $configuration;
     private $fileSystem;
 
-    public function __construct($path, $configuration=null) {
+    public function __construct($httpUrlImage, $configuration=null) {
         if ($configuration == null) $configuration = new Configuration();
-        $this->checkPath($path);
+        $this->checkPath($httpUrlImage);
         $this->checkConfiguration($configuration);
-        $this->path = $path;
+        $this->httpUrlImage = $httpUrlImage;
         $this->configuration = $configuration;
         $this->fileSystem = new FileSystem();
     }
@@ -24,8 +24,8 @@ class Resizer {
     public function obtainFilePath() {
         $imagePath = '';
 
-        if($this->path->isHttpProtocol()):
-            $filename = $this->path->obtainFileName();
+        if($this->httpUrlImage->isHttpProtocol()):
+            $filename = $this->httpUrlImage->obtainFileName();
             $local_filepath = $this->configuration->obtainRemote() .$filename;
             $inCache = $this->isInCache($local_filepath);
 
@@ -47,7 +47,7 @@ class Resizer {
 
 
     private function download($filePath) {
-        $img = $this->fileSystem->file_get_contents($this->path->sanitizedPath());
+        $img = $this->fileSystem->file_get_contents($this->httpUrlImage->sanitizedPath());
         $this->fileSystem->file_put_contents($filePath,$img);
     }
 
@@ -63,8 +63,8 @@ class Resizer {
         $this->fileSystem->filemtime($filePath) < strtotime('+'. $cacheMinutes. ' minutes');
     }
 
-    private function checkPath($path) {
-        if (!($path instanceof ImagePath)) throw new InvalidArgumentException();
+    private function checkPath($httpUrlImage) {
+        if (!($httpUrlImage instanceof HttpUrlImage)) throw new InvalidArgumentException();
     }
 
     private function checkConfiguration($configuration) {
