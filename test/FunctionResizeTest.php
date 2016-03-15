@@ -1,8 +1,11 @@
 <?php
 
-include 'Configuration.php';
+
+require_once 'function.resize.php';
+require_once 'TestUtils.php';
 
 class FunctionResizeTest extends PHPUnit_Framework_TestCase {
+
 
     private $defaults = array(
         'crop' => false,
@@ -10,31 +13,26 @@ class FunctionResizeTest extends PHPUnit_Framework_TestCase {
         'thumbnail' => false,
         'maxOnly' => false,
         'canvas-color' => 'transparent',
-        'output-filename' => false,
         'cacheFolder' => './cache/',
         'remoteFolder' => './cache/remote/',
         'quality' => 90,
         'cache_http_minutes' => 20,
-        'width' => null,
-        'height' => null
     );
+
+
 
     public function testOpts()
     {
-        $this->assertInstanceOf('Configuration', new Configuration);
+        $configuration = TestUtils::mockConfiguration();
+        $this->assertInstanceOf('Configuration', $configuration);
     }
 
-    public function testNullOptsDefaults() {
-        $configuration = new Configuration(null);
+    public function testOptsDefaults() {
+        $defaults = array_merge(TestUtils::mockRequired(), $this->defaults);
 
-        $this->assertEquals($this->defaults, $configuration->asHash());
-    }
+        $configuration = TestUtils::mockConfiguration();
 
-    public function testDefaults() {
-        $configuration = new Configuration();
-        $asHash = $configuration->asHash();
-
-        $this->assertEquals($this->defaults, $asHash);
+        $this->assertEquals($defaults, $configuration->asHash());
     }
 
     public function testDefaultsNotOverwriteConfiguration() {
@@ -43,6 +41,7 @@ class FunctionResizeTest extends PHPUnit_Framework_TestCase {
             'thumbnail' => true,
             'maxOnly' => true
         );
+        $opts=array_merge(TestUtils::mockRequired(), $opts);
 
         $configuration = new Configuration($opts);
         $configured = $configuration->asHash();
@@ -52,22 +51,63 @@ class FunctionResizeTest extends PHPUnit_Framework_TestCase {
     }
 
     public function testObtainCache() {
-        $configuration = new Configuration();
+        $configuration = TestUtils::mockConfiguration();
 
         $this->assertEquals('./cache/', $configuration->obtainCache());
     }
 
     public function testObtainRemote() {
-        $configuration = new Configuration();
+        $configuration = TestUtils::mockConfiguration();
 
         $this->assertEquals('./cache/remote/', $configuration->obtainRemote());
     }
 
     public function testObtainConvertPath() {
-        $configuration = new Configuration();
+        $configuration = TestUtils::mockConfiguration();
 
         $this->assertEquals('convert', $configuration->obtainConvertPath());
     }
+
+    public function testObtainOutputFileName() {
+        $configuration = TestUtils::mockConfiguration();
+
+        $this->assertEquals(TestUtils::OUT_FILE, $configuration->obtainOutputFileName());
+    }
+
+    public function test_WhenRequiredOuputFileName_ThenOK() {
+        $defaults = array(
+            'output-filename' => null,
+            'width' => 125,
+            'height' => 125);
+
+        $configuration = new Configuration($defaults);
+    }
+    public function test_WhenRequiredWidth_ThenOK() {
+        $defaults = array(
+            'output-filename' => '/out/file',
+            'width' => null,
+            'height' => 125);
+
+        $configuration = new Configuration($defaults);
+    }
+    public function test_WhenRequiredHeight_ThenOK() {
+        $defaults = array(
+            'output-filename' => '/out/file',
+            'width' => 125,
+            'height' => null);
+
+        $configuration = new Configuration($defaults);
+    }
+    /**
+     * @expectedException InvalidArgumentException
+     */
+    public function test_WhenNoneRequired_ThenError() {
+        $defaults = null;
+
+        $configuration = new Configuration($defaults);
+    }
+
+
 }
 
 ?>

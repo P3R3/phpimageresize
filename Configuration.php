@@ -9,6 +9,7 @@ class Configuration {
     const CACHE_MINUTES_KEY = 'cache_http_minutes';
     const WIDTH_KEY = 'width';
     const HEIGHT_KEY = 'height';
+    const OUTPUT_FILENAME_KEY = 'output-filename';
 
     const CONVERT_PATH = 'convert';
 
@@ -23,7 +24,7 @@ class Configuration {
             'thumbnail' => false,
             'maxOnly' => false,
             'canvas-color' => 'transparent',
-            'output-filename' => false,
+            self::OUTPUT_FILENAME_KEY => false,
             self::CACHE_KEY => self::CACHE_PATH,
             self::REMOTE_KEY => self::REMOTE_PATH,
             'quality' => 90,
@@ -32,6 +33,10 @@ class Configuration {
             'height' => null);
 
         $this->opts = array_merge($defaults, $sanitized);
+
+        if(empty($this->obtainOutputFileName()) && empty($this->obtainWidth()) && empty($this->obtainHeight())) {
+            throw new InvalidArgumentException();
+        }
     }
 
     public function asHash() {
@@ -65,6 +70,10 @@ class Configuration {
         if($opts == null) return array();
 
         return $opts;
+    }
+
+    public function obtainOutputFileName() {
+        return $this->opts[self::OUTPUT_FILENAME_KEY];
     }
 
 }

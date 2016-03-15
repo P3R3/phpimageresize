@@ -3,6 +3,8 @@
 require_once 'Resizer.php';
 require_once 'ImagePath.php';
 require_once 'Configuration.php';
+require_once 'TestUtils.php';
+
 date_default_timezone_set('Europe/Berlin');
 
 
@@ -23,12 +25,11 @@ class ResizerTest extends PHPUnit_Framework_TestCase {
     }
 
     public function testInstantiation() {
-        $this->assertInstanceOf('Resizer', new Resizer(new ImagePath(''), new Configuration()));
-        $this->assertInstanceOf('Resizer', new Resizer(new ImagePath('')));
+        $this->assertInstanceOf('Resizer', new Resizer(new ImagePath(''), TestUtils::mockConfiguration()));
     }
 
     public function testObtainLocallyCachedFilePath() {
-        $configuration = new Configuration(array('width' => 800, 'height' => 600));
+        $configuration = TestUtils::mockConfiguration();
         $imagePath = new ImagePath('http://martinfowler.com/mf.jpg?query=hello&s=fowler');
         $resizer = new Resizer($imagePath, $configuration);
 
@@ -47,7 +48,7 @@ class ResizerTest extends PHPUnit_Framework_TestCase {
     }
 
     public function testLocallyCachedFilePathFail() {
-        $configuration = new Configuration(array('width' => 800, 'height' => 600));
+        $configuration = TestUtils::mockConfiguration();
         $imagePath = new ImagePath('http://martinfowler.com/mf.jpg?query=hello&s=fowler');
         $resizer = new Resizer($imagePath, $configuration);
 
@@ -66,7 +67,7 @@ class ResizerTest extends PHPUnit_Framework_TestCase {
     }
 
     public function testCreateNewPath() {
-        $resizer = new Resizer(new ImagePath('http://martinfowler.com/mf.jpg?query=hello&s=fowler'));
+        $resizer = new Resizer(new ImagePath('http://martinfowler.com/mf.jpg?query=hello&s=fowler'), TestUtils::mockConfiguration());
     }
 
 }
