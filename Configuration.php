@@ -1,5 +1,7 @@
 <?php
 
+require_once 'FileSystem.php';
+
 class Configuration {
     const CACHE_PATH = './cache/';
     const REMOTE_PATH = './cache/remote/';
@@ -7,8 +9,8 @@ class Configuration {
     const CACHE_KEY = 'cacheFolder';
     const REMOTE_KEY = 'remoteFolder';
     const CACHE_MINUTES_KEY = 'cache_http_minutes';
-    const WIDTH_KEY = 'width';
-    const HEIGHT_KEY = 'height';
+    const WIDTH_KEY = 'w';
+    const HEIGHT_KEY = 'h';
     const OUTPUT_FILENAME_KEY = 'output-filename';
 
     const CONVERT_PATH = 'convert';
@@ -29,21 +31,23 @@ class Configuration {
             self::REMOTE_KEY => self::REMOTE_PATH,
             'quality' => 90,
             'cache_http_minutes' => 20,
-            'width' => null,
-            'height' => null);
+            'w' => null,
+            'h' => null);
 
         $this->opts = array_merge($defaults, $sanitized);
 
         if(empty($this->obtainOutputFileName()) && empty($this->obtainWidth()) && empty($this->obtainHeight())) {
             throw new InvalidArgumentException();
         }
+
+        $this->fileSystem = new FileSystem();
     }
 
     public function asHash() {
         return $this->opts;
     }
 
-    public function obtainCache() {
+    public function obtainOutputFolder() {
         return $this->opts[self::CACHE_KEY];
     }
 
@@ -72,8 +76,41 @@ class Configuration {
         return $opts;
     }
 
+    public function injectFileSystem(FileSystem $fileSystem) {
+        $this->fileSystem = $fileSystem;
+    }
+
     public function obtainOutputFileName() {
         return $this->opts[self::OUTPUT_FILENAME_KEY];
     }
 
+    public function withCrop() {
+        return isset($this->opts['crop']) && $this->opts['crop'] == true;
+    }
+
+    public function withScale() {
+        return isset($this->opts['scale']) && $this->opts['scale'] == true;
+    }
+
+    public function obtainOutputFilePath($sourceFilePath) {
+        if($this->obtainOutputFileName()) {
+           return $this->obtainOutputFileName();
+        }
+
+        $w = $this->obtainWidth();
+        $h = $this->obtainHeight();
+        $filename = $this->fileSystem->md5_file($sourceFilePath);
+        $finfo = $this->fileSystem->pathinfo($sourceFilePath);
+        $ext = $finfo['extension'];
+
+
+        $cropSignal = $this->withCrop() ? "_cp" : "";
+        $scaleSignal = $this->withScale() ? "_sc" : "";
+        $widthSignal = !empty($w) ? '_w'.$w : '';
+        $heightSignal = !empty($h) ? '_h'.$h : '';
+        $extension = '.'.$ext;
+
+        return  $this->obtainOutputFolder() .$filename.$widthSignal.$heightSignal.$cropSignal.$scaleSignal.$extension;
+
+    }
 }

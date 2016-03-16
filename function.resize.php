@@ -22,27 +22,7 @@ function isInCache($path, $imagePath) {
 	return $isInCache;
 }
 
-function composeNewPath($sourceFilePath, $configuration) {
-	$w = $configuration->obtainWidth();
-	$h = $configuration->obtainHeight();
-	$filename = md5_file($sourceFilePath);
-	$finfo = pathinfo($sourceFilePath);
-	$ext = $finfo['extension'];
 
-	$cropSignal = isset($opts['crop']) && $opts['crop'] == true ? "_cp" : "";
-	$scaleSignal = isset($opts['scale']) && $opts['scale'] == true ? "_sc" : "";
-	$widthSignal = !empty($w) ? '_w'.$w : '';
-	$heightSignal = !empty($h) ? '_h'.$h : '';
-	$extension = '.'.$ext;
-
-	$newPath = $configuration->obtainCache() .$filename.$widthSignal.$heightSignal.$cropSignal.$scaleSignal.$extension;
-
-	if($opts['output-filename']) {
-		$newPath = $opts['output-filename'];
-	}
-
-	return $newPath;
-}
 
 function defaultShellCommand($configuration, $imagePath, $newPath) {
 	$opts = $configuration->asHash();
@@ -152,8 +132,7 @@ function resize($urlImage,$opts=null){
 		return 'image not found';
 	}
 
-
-	$newPath = composeNewPath($sourceFilePath, $configuration);
+	$newPath = $configuration->obtainOutputFilePath($sourceFilePath);
 
     $create = !isInCache($newPath, $sourceFilePath);
 

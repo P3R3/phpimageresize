@@ -53,7 +53,7 @@ class ConfigurationTest extends PHPUnit_Framework_TestCase {
     public function testObtainCache() {
         $configuration = TestUtils::mockConfiguration();
 
-        $this->assertEquals('./cache/', $configuration->obtainCache());
+        $this->assertEquals('./cache/', $configuration->obtainOutputFolder());
     }
 
     public function obtainDownloadFolder() {
@@ -74,27 +74,66 @@ class ConfigurationTest extends PHPUnit_Framework_TestCase {
         $this->assertEquals(TestUtils::OUT_FILE, $configuration->obtainOutputFileName());
     }
 
+    public function testWithCrop() {
+        $opts = array(
+            'crop' => true
+        );
+        $opts=array_merge(TestUtils::mockRequired(), $opts);
+        $configuration = new Configuration($opts);
+
+        $this->assertEquals(true, $configuration->withCrop());
+    }
+    public function testWithoutCrop() {
+        $opts = array(
+            'crop' => false
+        );
+        $opts=array_merge(TestUtils::mockRequired(), $opts);
+        $configuration = new Configuration($opts);
+
+        $this->assertEquals(false, $configuration->withCrop());
+    }
+
+    public function testWithScale() {
+        $opts = array(
+            'scale' => true
+        );
+        $opts=array_merge(TestUtils::mockRequired(), $opts);
+        $configuration = new Configuration($opts);
+
+        $this->assertEquals(true, $configuration->withScale());
+    }
+    public function testWithoutScale() {
+        $opts = array(
+            'scale' => false
+        );
+        $opts=array_merge(TestUtils::mockRequired(), $opts);
+        $configuration = new Configuration($opts);
+
+        $this->assertEquals(false, $configuration->withScale());
+    }
+
+
     public function test_WhenRequiredOuputFileName_ThenOK() {
         $defaults = array(
             'output-filename' => null,
-            'width' => 125,
-            'height' => 125);
+            'w' => 125,
+            'h' => 125);
 
         $configuration = new Configuration($defaults);
     }
     public function test_WhenRequiredWidth_ThenOK() {
         $defaults = array(
             'output-filename' => '/out/file',
-            'width' => null,
-            'height' => 125);
+            'w' => null,
+            'h' => 125);
 
         $configuration = new Configuration($defaults);
     }
     public function test_WhenRequiredHeight_ThenOK() {
         $defaults = array(
             'output-filename' => '/out/file',
-            'width' => 125,
-            'height' => null);
+            'w' => 125,
+            'h' => null);
 
         $configuration = new Configuration($defaults);
     }
@@ -105,6 +144,68 @@ class ConfigurationTest extends PHPUnit_Framework_TestCase {
         $defaults = null;
 
         $configuration = new Configuration($defaults);
+    }
+
+
+    public function testObtainOutputFilePath_WhenOutputFileNameInformed() {
+        $configuration = TestUtils::mockConfiguration();
+        $sourceFilePath = './cache/remote/mf.jpg';
+
+        $stub = $this->getMockBuilder('FileSystem')
+            ->getMock();
+        $stub->method('md5_file')
+            ->willReturn('df1555ec0c2d7fcad3a03770f9aa238a');
+        $stub->method('pathinfo')
+            ->willReturn(array('extension' => 'jpg'));
+        $configuration->injectFileSystem($stub);
+
+        $outputFilePath = $configuration->obtainOutputFilePath($sourceFilePath);
+
+        $this->assertEquals($configuration->obtainOutputFileName(), $outputFilePath);
+    }
+    public function testObtainOutputFilePath_WhenOutputFileNameNotInformed() {
+        $opts = array(
+            'scale' => false,
+            'output-filename' => null,
+            'w' => 125,
+            'h' => 125);
+        $opts=array_merge(TestUtils::mockRequired(), $opts);
+        $configuration = new Configuration($opts);
+        $sourceFilePath = './cache/remote/mf.jpg';
+
+        $stub = $this->getMockBuilder('FileSystem')
+            ->getMock();
+        $stub->method('md5_file')
+            ->willReturn('df1555ec0c2d7fcad3a03770f9aa238a');
+        $stub->method('pathinfo')
+            ->willReturn(array('extension' => 'jpg'));
+        $configuration->injectFileSystem($stub);
+
+        $outputFilePath = $configuration->obtainOutputFilePath($sourceFilePath);
+
+        $this->assertEquals('./cache/df1555ec0c2d7fcad3a03770f9aa238a_w125_h125.jpg', $outputFilePath);
+    }
+    public function testObtainOutputFilePath_WhenAllInformedExceptOutputFileName() {
+        $opts = array(
+            'crop' => true,
+            'scale' => true,
+            'output-filename' => null,
+            'w' => 125,
+            'h' => 125);
+        $configuration = new Configuration($opts);
+        $sourceFilePath = './cache/remote/mf.jpg';
+
+        $stub = $this->getMockBuilder('FileSystem')
+            ->getMock();
+        $stub->method('md5_file')
+            ->willReturn('df1555ec0c2d7fcad3a03770f9aa238a');
+        $stub->method('pathinfo')
+            ->willReturn(array('extension' => 'jpg'));
+        $configuration->injectFileSystem($stub);
+
+        $outputFilePath = $configuration->obtainOutputFilePath($sourceFilePath);
+
+        $this->assertEquals('./cache/df1555ec0c2d7fcad3a03770f9aa238a_w125_h125_cp_sc.jpg', $outputFilePath);
     }
 
 

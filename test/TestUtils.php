@@ -13,8 +13,8 @@ class TestUtils
     public static function mockRequired() {
         $defaults = array(
             'output-filename' => self::OUT_FILE,
-            'width' => 800,
-            'height' => 600);
+            'w' => 800,
+            'h' => 600);
         return $defaults;
     }
 

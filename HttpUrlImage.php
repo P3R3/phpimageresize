@@ -1,6 +1,6 @@
 <?php
 
-require 'FileSystem.php';
+require_once 'FileSystem.php';
 
 class HttpUrlImage {
 
@@ -33,7 +33,10 @@ class HttpUrlImage {
     private function obtainScheme() {
         if ($this->url == '') return '';
         $purl = parse_url($this->url);
-        return $purl['scheme'];
+        if (isset($purl['scheme'])) {
+            return $purl['scheme'];
+        }
+        return null;
     }
 
     public function injectFileSystem(FileSystem $fileSystem) {
@@ -86,7 +89,7 @@ class HttpUrlImage {
     }
 
     public function downloadTo($downloadFolder, $expirationTime) {
-        $downloadFilePath = '';
+        $downloadFilePath = $this->sanitizedPath();
 
         if($this->isHttpProtocol()):
             try {

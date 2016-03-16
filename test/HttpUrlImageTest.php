@@ -39,7 +39,7 @@ class HttpUrlImageTest extends PHPUnit_Framework_TestCase {
 
 
 
-    public function testObtainLocallyCachedFilePath() {
+    public function testDownloadTo_ObtainLocallyCachedFilePath() {
         $httpUrlImage = new HttpUrlImage('http://martinfowler.com/mf.jpg?query=hello&s=fowler');
 
         $stub = $this->getMockBuilder('FileSystem')
@@ -58,7 +58,7 @@ class HttpUrlImageTest extends PHPUnit_Framework_TestCase {
 
     }
 
-    public function testLocallyCachedFilePathFail() {
+    public function testDownloadTo_LocallyCachedFilePathFail() {
         $httpUrlImage = new HttpUrlImage('http://martinfowler.com/mf.jpg?query=hello&s=fowler');
 
         $stub = $this->getMockBuilder('FileSystem')
@@ -79,7 +79,7 @@ class HttpUrlImageTest extends PHPUnit_Framework_TestCase {
     /**
      * @expectedException RuntimeException
      */
-    public function testFallbackDownloadFail() {
+    public function testDownloadTo_FallbackFail() {
         $httpUrlImage = new HttpUrlImage('file://martinfowler.com/mf.jpg?query=hello&s=fowler');
 
         $stub = $this->getMockBuilder('FileSystem')
@@ -96,6 +96,21 @@ class HttpUrlImageTest extends PHPUnit_Framework_TestCase {
 
     }
 
+    public function testDownloadTo_ReferenceToServerFile() {
+        $httpUrlImage = new HttpUrlImage('images/dog.jpg');
+
+        $stub = $this->getMockBuilder('FileSystem')
+            ->getMock();
+        $stub->method('file_exists')
+            ->willReturn(true);
+
+
+        $httpUrlImage->injectFileSystem($stub);
+
+        $expirationTime = 20;
+
+        $this->assertEquals('images/dog.jpg', $httpUrlImage->downloadTo('./cache/remote/', $expirationTime));
+    }
 
 
 }
