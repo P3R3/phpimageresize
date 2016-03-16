@@ -47,7 +47,7 @@ class Configuration {
         return $this->opts[self::CACHE_KEY];
     }
 
-    public function obtainRemote() {
+    public function obtainDownloadFolder() {
         return $this->opts[self::REMOTE_KEY];
     }
 

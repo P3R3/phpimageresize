@@ -129,21 +129,25 @@ function doResize($imagePath, $newPath, $configuration) {
 
 function resize($urlImage,$opts=null){
 
+    try {
+        $configuration = new Configuration($opts);
+    }catch (Exception $e) {
+        return 'cannot resize the image';
+    }
 
-	$httpUrlImage = new HttpUrlImage($urlImage);
+    $httpUrlImage = new HttpUrlImage($urlImage);
 
-	try {
-		$configuration = new Configuration($opts);
-	}catch (Exception $e) {
-		return 'cannot resize the image';
-	}
 
-	$resizer = new Resizer($httpUrlImage, $configuration);
+    $resizer = new Resizer($httpUrlImage, $configuration);
 
 	// This has to be done in resizer resize
 
 	try {
-		$sourceFilePath = $resizer->obtainFilePath();
+        $downloadFolder = $configuration->obtainDownloadFolder();
+        $expirationTime = $configuration->obtainCacheMinutes();
+
+        $sourceFilePath = $httpUrlImage->downloadTo($downloadFolder, $expirationTime);
+
 	} catch (Exception $e) {
 		return 'image not found';
 	}

@@ -36,4 +36,66 @@ class HttpUrlImageTest extends PHPUnit_Framework_TestCase {
         $this->assertEquals('mf.jpg', $httpUrlImage->obtainFileName());
     }
 
+
+
+
+    public function testObtainLocallyCachedFilePath() {
+        $httpUrlImage = new HttpUrlImage('http://martinfowler.com/mf.jpg?query=hello&s=fowler');
+
+        $stub = $this->getMockBuilder('FileSystem')
+            ->getMock();
+        $stub->method('file_get_contents')
+            ->willReturn('foo');
+
+        $stub->method('file_exists')
+            ->willReturn(true);
+
+        $httpUrlImage->injectFileSystem($stub);
+
+        $expirationTime = 20;
+
+        $this->assertEquals('./cache/remote/mf.jpg', $httpUrlImage->downloadTo('./cache/remote/', $expirationTime));
+
+    }
+
+    public function testLocallyCachedFilePathFail() {
+        $httpUrlImage = new HttpUrlImage('http://martinfowler.com/mf.jpg?query=hello&s=fowler');
+
+        $stub = $this->getMockBuilder('FileSystem')
+            ->getMock();
+        $stub->method('file_exists')
+            ->willReturn(true);
+
+        $stub->method('filemtime')
+            ->willReturn(21 * 60);
+
+        $httpUrlImage->injectFileSystem($stub);
+
+        $expirationTime = 20;
+
+        $this->assertEquals('./cache/remote/mf.jpg', $httpUrlImage->downloadTo('./cache/remote/', $expirationTime));
+
+    }
+    /**
+     * @expectedException RuntimeException
+     */
+    public function testFallbackDownloadFail() {
+        $httpUrlImage = new HttpUrlImage('file://martinfowler.com/mf.jpg?query=hello&s=fowler');
+
+        $stub = $this->getMockBuilder('FileSystem')
+            ->getMock();
+        $stub->method('file_exists')
+            ->willReturn(false);
+
+
+        $httpUrlImage->injectFileSystem($stub);
+
+        $expirationTime = 20;
+
+        $httpUrlImage->downloadTo('./cache/remote/', $expirationTime);
+
+    }
+
+
+
 }

@@ -56,10 +56,10 @@ class ConfigurationTest extends PHPUnit_Framework_TestCase {
         $this->assertEquals('./cache/', $configuration->obtainCache());
     }
 
-    public function testObtainRemote() {
+    public function obtainDownloadFolder() {
         $configuration = TestUtils::mockConfiguration();
 
-        $this->assertEquals('./cache/remote/', $configuration->obtainRemote());
+        $this->assertEquals('./cache/remote/', $configuration->obtainDownloadFolder());
     }
 
     public function testObtainConvertPath() {
