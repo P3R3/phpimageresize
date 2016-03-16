@@ -26,5 +26,9 @@ class FileSystem {
         return pathinfo($filename);
     }
 
+    public function getExtension($filename) {
+        $finfo = $this->pathinfo($filename);
+        return '.'.$finfo['extension'];
+    }
 
 }

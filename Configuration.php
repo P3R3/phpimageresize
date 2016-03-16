@@ -92,25 +92,47 @@ class Configuration {
         return isset($this->opts['scale']) && $this->opts['scale'] == true;
     }
 
+
+    private function withWidth() {
+        return !empty($this->obtainWidth());
+    }
+
+    private function withHeight() {
+        return !empty($this->obtainHeight());
+    }
+
+    private function getExtension($filename) {
+        return $this->fileSystem->getExtension($filename);
+    }
+
     public function obtainOutputFilePath($sourceFilePath) {
         if($this->obtainOutputFileName()) {
            return $this->obtainOutputFileName();
         }
 
-        $w = $this->obtainWidth();
-        $h = $this->obtainHeight();
         $filename = $this->fileSystem->md5_file($sourceFilePath);
-        $finfo = $this->fileSystem->pathinfo($sourceFilePath);
-        $ext = $finfo['extension'];
 
+        $path = $this->obtainOutputFolder().$filename;
 
-        $cropSignal = $this->withCrop() ? "_cp" : "";
-        $scaleSignal = $this->withScale() ? "_sc" : "";
-        $widthSignal = !empty($w) ? '_w'.$w : '';
-        $heightSignal = !empty($h) ? '_h'.$h : '';
-        $extension = '.'.$ext;
+        if ($this->withWidth()) {
+            $path=$path.'_w'.$this->obtainWidth();
+        }
 
-        return  $this->obtainOutputFolder() .$filename.$widthSignal.$heightSignal.$cropSignal.$scaleSignal.$extension;
+        if ($this->withHeight()) {
+            $path=$path.'_h'.$this->obtainHeight();
+        }
+
+        if ($this->withCrop()) {
+            $path=$path."_cp";
+        }
+
+        if ($this->withScale()) {
+            $path=$path."_sc";
+        }
+
+        $path=$path.$this->getExtension($sourceFilePath);
+
+        return $path;
 
     }
 }

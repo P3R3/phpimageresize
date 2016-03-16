@@ -155,8 +155,8 @@ class ConfigurationTest extends PHPUnit_Framework_TestCase {
             ->getMock();
         $stub->method('md5_file')
             ->willReturn('df1555ec0c2d7fcad3a03770f9aa238a');
-        $stub->method('pathinfo')
-            ->willReturn(array('extension' => 'jpg'));
+        $stub->method('getExtension')
+            ->willReturn('.jpg');
         $configuration->injectFileSystem($stub);
 
         $outputFilePath = $configuration->obtainOutputFilePath($sourceFilePath);
@@ -177,8 +177,8 @@ class ConfigurationTest extends PHPUnit_Framework_TestCase {
             ->getMock();
         $stub->method('md5_file')
             ->willReturn('df1555ec0c2d7fcad3a03770f9aa238a');
-        $stub->method('pathinfo')
-            ->willReturn(array('extension' => 'jpg'));
+        $stub->method('getExtension')
+            ->willReturn('.jpg');
         $configuration->injectFileSystem($stub);
 
         $outputFilePath = $configuration->obtainOutputFilePath($sourceFilePath);
@@ -199,8 +199,8 @@ class ConfigurationTest extends PHPUnit_Framework_TestCase {
             ->getMock();
         $stub->method('md5_file')
             ->willReturn('df1555ec0c2d7fcad3a03770f9aa238a');
-        $stub->method('pathinfo')
-            ->willReturn(array('extension' => 'jpg'));
+        $stub->method('getExtension')
+            ->willReturn('.jpg');
         $configuration->injectFileSystem($stub);
 
         $outputFilePath = $configuration->obtainOutputFilePath($sourceFilePath);
