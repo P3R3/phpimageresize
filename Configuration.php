@@ -5,15 +5,21 @@ require_once 'FileSystem.php';
 class Configuration {
     const CACHE_PATH = './cache/';
     const REMOTE_PATH = './cache/remote/';
+    const CONVERT_PATH = 'convert';
 
     const CACHE_KEY = 'cacheFolder';
     const REMOTE_KEY = 'remoteFolder';
-    const CACHE_MINUTES_KEY = 'cache_http_minutes';
+    const CACHE_MINUTES_KEY = self::CACHE_HTTP_MINUTES_KEY;
+    const OUTPUT_FILENAME_KEY = 'output-filename';
+    const CROP_KEY = 'crop';
+    const SCALE_KEY = 'scale';
+    const THUMBNAIL_KEY = 'thumbnail';
+    const MAX_ONLY_KEY = 'maxOnly';
+    const CANVAS_COLOR_KEY = 'canvas-color';
+    const QUALITY_KEY = 'quality';
+    const CACHE_HTTP_MINUTES_KEY = 'cache_http_minutes';
     const WIDTH_KEY = 'w';
     const HEIGHT_KEY = 'h';
-    const OUTPUT_FILENAME_KEY = 'output-filename';
-
-    const CONVERT_PATH = 'convert';
 
     private $opts;
 
@@ -21,18 +27,18 @@ class Configuration {
         $sanitized= $this->sanitize($opts);
 
         $defaults = array(
-            'crop' => false,
-            'scale' => 'false',
-            'thumbnail' => false,
-            'maxOnly' => false,
-            'canvas-color' => 'transparent',
+            self::CROP_KEY => false,
+            self::SCALE_KEY => 'false',
+            self::THUMBNAIL_KEY => false,
+            self::MAX_ONLY_KEY => false,
+            self::CANVAS_COLOR_KEY => 'transparent',
             self::OUTPUT_FILENAME_KEY => false,
             self::CACHE_KEY => self::CACHE_PATH,
             self::REMOTE_KEY => self::REMOTE_PATH,
-            'quality' => 90,
-            'cache_http_minutes' => 20,
-            'w' => null,
-            'h' => null);
+            self::QUALITY_KEY => 90,
+            self::CACHE_HTTP_MINUTES_KEY => 20,
+            self::WIDTH_KEY => null,
+            self::HEIGHT_KEY => null);
 
         $this->opts = array_merge($defaults, $sanitized);
 
@@ -70,6 +76,7 @@ class Configuration {
     public function obtainCacheMinutes() {
         return $this->opts[self::CACHE_MINUTES_KEY];
     }
+
     private function sanitize($opts) {
         if($opts == null) return array();
 
@@ -85,25 +92,13 @@ class Configuration {
     }
 
     public function withCrop() {
-        return isset($this->opts['crop']) && $this->opts['crop'] == true;
+        return isset($this->opts[self::CROP_KEY]) && $this->opts[self::CROP_KEY] == true;
     }
 
     public function withScale() {
-        return isset($this->opts['scale']) && $this->opts['scale'] == true;
+        return isset($this->opts[self::SCALE_KEY]) && $this->opts[self::SCALE_KEY] == true;
     }
 
-
-    private function withWidth() {
-        return !empty($this->obtainWidth());
-    }
-
-    private function withHeight() {
-        return !empty($this->obtainHeight());
-    }
-
-    private function getExtension($filename) {
-        return $this->fileSystem->getExtension($filename);
-    }
 
     public function obtainOutputFilePath($sourceFilePath) {
         if($this->obtainOutputFileName()) {
@@ -135,4 +130,19 @@ class Configuration {
         return $path;
 
     }
+
+    private function withWidth() {
+        return !empty($this->obtainWidth());
+    }
+
+    private function withHeight() {
+        return !empty($this->obtainHeight());
+    }
+
+    private function getExtension($filename) {
+        return $this->fileSystem->getExtension($filename);
+    }
+
+
+
 }
