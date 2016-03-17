@@ -118,7 +118,7 @@ function resize($urlImage,$opts=null){
     $httpUrlImage = new HttpUrlImage($urlImage);
 
 
-    $resizer = new Resizer($httpUrlImage, $configuration);
+    //$resizer = new Resizer($httpUrlImage, $configuration);
 
 	// This has to be done in resizer resize
 

@@ -31,4 +31,13 @@ class FileSystem {
         return '.'.$finfo['extension'];
     }
 
+    public function exec($cmd, $output) {
+        exec($cmd, $output, $return_code);
+        return $return_code;
+    }
+
+    public function getimagesize($imagePath) {
+        return getimagesize($imagePath);
+    }
+
 }
