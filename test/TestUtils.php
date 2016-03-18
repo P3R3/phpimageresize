@@ -1,11 +1,6 @@
 <?php
 
-/**
- * Created by PhpStorm.
- * User: Pere
- * Date: 15/03/2016
- * Time: 21:31
- */
+
 class TestUtils
 {
     const OUT_FILE = '/out/file';

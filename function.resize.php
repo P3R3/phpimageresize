@@ -13,30 +13,21 @@ function resize($urlImage,$opts=null){
         return 'cannot resize the image';
     }
 
-    $httpUrlImage = new HttpUrlImage($urlImage);
-
 	try {
         $downloadFolder = $configuration->obtainDownloadFolder();
         $expirationTime = $configuration->obtainCacheMinutes();
 
-        $sourceFilePath = $httpUrlImage->downloadTo($downloadFolder, $expirationTime);
-
+        $sourceFilePath = (new HttpUrlImage($urlImage))->downloadTo($downloadFolder, $expirationTime);
 	} catch (Exception $e) {
 		return 'image not found';
 	}
 
-
     try {
-        $resizer = new Resizer($configuration);
-        $newPath = $resizer->doResize($sourceFilePath);
+        $newPath = (new Resizer($configuration))->doResize($sourceFilePath);
     } catch (Exception $e) {
         return 'cannot resize the image';
     }
 
-	// The new path must be the return value of resizer resize
+    return str_replace($_SERVER['DOCUMENT_ROOT'],'',$newPath);
 
-	$cacheFilePath = str_replace($_SERVER['DOCUMENT_ROOT'],'',$newPath);
-
-	return $cacheFilePath;
-	
 }

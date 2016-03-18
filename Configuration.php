@@ -92,6 +92,10 @@ class Configuration {
         return $opts;
     }
 
+    private function getExtension($filename) {
+        return $this->fileSystem->getExtension($filename);
+    }
+
     public function injectFileSystem(FileSystem $fileSystem) {
         $this->fileSystem = $fileSystem;
     }
@@ -108,9 +112,16 @@ class Configuration {
         return isset($this->opts[self::SCALE_KEY]) && $this->opts[self::SCALE_KEY] === true;
     }
 
-
     public function withMaxOnly() {
         return isset($this->opts[self::MAX_ONLY_KEY]) && $this->opts[self::MAX_ONLY_KEY] == true ;
+    }
+
+    public function withWidth() {
+        return !empty($this->obtainWidth());
+    }
+
+    public function withHeight() {
+        return !empty($this->obtainHeight());
     }
 
     public function obtainOutputFilePath($sourceFilePath) {
@@ -142,18 +153,6 @@ class Configuration {
 
         return $path;
 
-    }
-
-    public function withWidth() {
-        return !empty($this->obtainWidth());
-    }
-
-    public function withHeight() {
-        return !empty($this->obtainHeight());
-    }
-
-    private function getExtension($filename) {
-        return $this->fileSystem->getExtension($filename);
     }
 
 

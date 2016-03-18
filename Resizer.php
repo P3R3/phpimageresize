@@ -119,6 +119,11 @@ class Resizer {
         }
     }
 
+    private function notExists($outputFilePath)
+    {
+        return !$this->fileSystem->file_exists($outputFilePath);
+    }
+
     private function isInCache($outputFilePath, $imagePath) {
         if($this->notExists($outputFilePath)) {
             return false;
@@ -129,6 +134,7 @@ class Resizer {
 
         return ($newFileTime >= $origFileTime);
     }
+
 
     public function doResize($imagePath) {
         $ouputFilePath = $this->configuration->obtainOutputFilePath($imagePath);
@@ -146,15 +152,6 @@ class Resizer {
         $this->executeCommand($cmd);
 
         return $ouputFilePath;
-    }
-
-    /**
-     * @param $outputFilePath
-     * @return bool
-     */
-    private function notExists($outputFilePath)
-    {
-        return !$this->fileSystem->file_exists($outputFilePath);
     }
 
 }

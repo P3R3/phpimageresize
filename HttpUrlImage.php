@@ -78,6 +78,11 @@ class HttpUrlImage {
         return $downloadFilePath;
     }
 
+    private function notExists($downloadFilePath)
+    {
+        return !$this->fileSystem->file_exists($downloadFilePath);
+    }
+
     private function fallbackFile($downloadFilePath) {
         $downloadFilePath = $_SERVER['DOCUMENT_ROOT'].$downloadFilePath;
 
@@ -87,6 +92,7 @@ class HttpUrlImage {
 
         return $downloadFilePath;
     }
+
 
     public function downloadTo($downloadFolder, $expirationTime) {
         $downloadFilePath = $this->sanitizedPath();
@@ -105,15 +111,6 @@ class HttpUrlImage {
             return $this->fallbackFile($downloadFilePath);
         endif;
 
-    }
-
-    /**
-     * @param $downloadFilePath
-     * @return bool
-     */
-    private function notExists($downloadFilePath)
-    {
-        return !$this->fileSystem->file_exists($downloadFilePath);
     }
 
 
