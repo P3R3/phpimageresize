@@ -32,7 +32,7 @@ class Resizer {
     }
 
 
-    private function defaultShellCommand() {
+    private function thumbnailArguments() {
         $command =
             " -thumbnail "
                 . ($this->configuration->withHeight() ? 'x':'')
@@ -58,13 +58,13 @@ class Resizer {
         return " -resize ". escapeshellarg($resize);
     }
 
-    private function commandWithScale() {
+    private function scaleArguments() {
         $cmd = " -quality ". escapeshellarg($this->configuration->obtainQuality());
 
         return $cmd;
     }
 
-   private function commandWithCrop() {
+   private function cropArguments() {
         $cmd = " -size "
                 . escapeshellarg($this->configuration->obtainWidth() ."x". $this->configuration->obtainHeight())
                 ." xc:"
@@ -77,23 +77,23 @@ class Resizer {
     }
 
     private function respectImageRatio() {
-        return  $this->configuration->withWidth()
-                and
-                $this->configuration->withHeight();
+        return  !$this->configuration->withWidth()
+                or
+                !$this->configuration->withHeight();
     }
 
 
     private function resizeArguments($imagePath) {
 
         if ($this->respectImageRatio()) {
+            return $this->thumbnailArguments();
+        } else {
             $cmd=$this->respectRatioArguments($imagePath);
             if($this->configuration->withScale()):
-                return $cmd . $this->commandWithScale();
+                return $cmd . $this->scaleArguments();
             else:
-                return $cmd . $this->commandWithCrop();
+                return $cmd . $this->cropArguments();
             endif;
-        } else {
-            return $this->defaultShellCommand();
         }
 
     }
