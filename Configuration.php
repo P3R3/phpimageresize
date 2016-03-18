@@ -61,7 +61,7 @@ class Configuration {
         return $this->opts[self::REMOTE_KEY];
     }
 
-    public function obtainConvertPath() {
+    public function obtainConvertCommand() {
         return self::CONVERT_PATH;
     }
 

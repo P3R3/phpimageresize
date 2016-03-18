@@ -44,14 +44,14 @@ class Resizer {
         return $command;
     }
 
-    private function respectRatioArguments($imagePath) {
+    private function respectRatioArguments($isPanoramic) {
         $resize = "x".$this->configuration->obtainHeight();
 
-        if(!($this->configuration->withCrop()) && $this->isPanoramic($imagePath)):
+        if(!($this->configuration->withCrop()) && $isPanoramic):
             $resize = $this->configuration->obtainWidth();
         endif;
 
-        if($this->configuration->withCrop() && !$this->isPanoramic($imagePath)):
+        if($this->configuration->withCrop() && !$isPanoramic):
             $resize = $this->configuration->obtainWidth();
         endif;
 
@@ -59,21 +59,17 @@ class Resizer {
     }
 
     private function scaleArguments() {
-        $cmd = " -quality ". escapeshellarg($this->configuration->obtainQuality());
-
-        return $cmd;
+        return  " -quality ". escapeshellarg($this->configuration->obtainQuality());
     }
 
    private function cropArguments() {
-        $cmd = " -size "
+        return " -size "
                 . escapeshellarg($this->configuration->obtainWidth() ."x". $this->configuration->obtainHeight())
                 ." xc:"
                 . escapeshellarg($this->configuration->obtainCanvasColor())
                 ." +swap -gravity center -composite -quality "
                 . escapeshellarg($this->configuration->obtainQuality())
             ;
-
-        return $cmd;
     }
 
     private function respectImageRatio() {
@@ -83,55 +79,55 @@ class Resizer {
     }
 
 
-    private function resizeArguments($imagePath) {
+    private function resizeArguments($isPanoramic) {
 
         if ($this->respectImageRatio()) {
             return $this->thumbnailArguments();
-        } else {
-            $cmd=$this->respectRatioArguments($imagePath);
-            if($this->configuration->withScale()):
-                return $cmd . $this->scaleArguments();
-            else:
-                return $cmd . $this->cropArguments();
-            endif;
         }
 
+        $cmd=$this->respectRatioArguments($isPanoramic);
+
+        if($this->configuration->withScale()):
+            return $cmd . $this->scaleArguments();
+        endif;
+
+        return $cmd . $this->cropArguments();
+
+    }
+
+    private function resizeFrom($imagePath)
+    {
+        return $this->configuration->obtainConvertCommand()
+        . " "
+        . escapeshellarg($imagePath);
+    }
+
+    private function resizeTo($ouputFilePath)
+    {
+        return " " . escapeshellarg($ouputFilePath);
+    }
+
+    private function executeCommand($cmd)
+    {
+        $output = array();
+
+        $return_code = $this->fileSystem->exec($cmd, $output);
+
+        if ($return_code != 0) {
+            error_log("Tried to execute : $cmd, return code: $return_code, output: " . print_r($output, true));
+            throw new RuntimeException();
+        }
     }
 
     public function doResize($imagePath) {
 
         $cmd = $this->resizeFrom($imagePath);
 
-        $cmd.=$this->resizeArguments($imagePath);
+        $cmd.=$this->resizeArguments($this->isPanoramic($imagePath));
 
-        $cmd.= $this->resizeTo($imagePath);
+        $cmd.= $this->resizeTo($this->configuration->obtainOutputFilePath($imagePath));
 
-        $output=array();
-        $return_code= $this->fileSystem->exec($cmd, $output);
-        if($return_code != 0) {
-            error_log("Tried to execute : $cmd, return code: $return_code, output: " . print_r($output, true));
-            throw new RuntimeException();
-        }
-    }
-
-    /**
-     * @param $imagePath
-     * @return string
-     */
-    private function resizeFrom($imagePath)
-    {
-        return $this->configuration->obtainConvertPath()
-        . " "
-        . escapeshellarg($imagePath);
-    }
-
-    /**
-     * @param $imagePath
-     * @return string
-     */
-    private function resizeTo($imagePath)
-    {
-        return " " . escapeshellarg($this->configuration->obtainOutputFilePath($imagePath));
+        $this->executeCommand($cmd);
     }
 
 }

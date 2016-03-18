@@ -23,12 +23,9 @@ class ResizerTest extends PHPUnit_Framework_TestCase {
         $this->assertInstanceOf('Resizer', new Resizer(TestUtils::mockConfiguration()));
     }
 
-
     public function testCreateNewPath() {
         $resizer = new Resizer(TestUtils::mockConfiguration());
     }
-
-    //
 
     public function testDoResize_WhenNotPanoramicAndAllInformedExceptScale() {
         $imagePath = './cache/remote/mf.jpg';
@@ -62,6 +59,7 @@ class ResizerTest extends PHPUnit_Framework_TestCase {
 
         $resizer->doResize($imagePath);
     }
+
     public function testDoResize_WhenPanoramicAndAllInformedExceptScale() {
         $imagePath = './cache/remote/mf.jpg';
         $opts = array(
@@ -128,10 +126,6 @@ class ResizerTest extends PHPUnit_Framework_TestCase {
         $resizer->doResize($imagePath);
     }
 
-
-    //
-
-
     public function testDoResize_WhenAllInformedAndNotPanoramic() {
         $imagePath = './cache/remote/mf.jpg';
         $opts = array(
@@ -164,6 +158,7 @@ class ResizerTest extends PHPUnit_Framework_TestCase {
 
         $resizer->doResize($imagePath);
     }
+
     public function testDoResize_WhenAllInformedAndPanoramic() {
         $imagePath = './cache/remote/mf.jpg';
         $opts = array(
@@ -257,6 +252,7 @@ class ResizerTest extends PHPUnit_Framework_TestCase {
 
         $resizer->doResize($imagePath);
     }
+
     public function testDoResize_WhenAllInformedExceptHeight() {
         $imagePath = './cache/remote/mf.jpg';
         $opts = array(
@@ -284,6 +280,7 @@ class ResizerTest extends PHPUnit_Framework_TestCase {
 
         $resizer->doResize($imagePath);
     }
+
     public function testDoResize_WhenDefaultExceptWidth() {
         $imagePath = './cache/remote/mf.jpg';
         $opts = array(
@@ -308,6 +305,7 @@ class ResizerTest extends PHPUnit_Framework_TestCase {
 
         $resizer->doResize($imagePath);
     }
+
     public function testDoResize_WhenDefaultExceptHeight() {
         $imagePath = './cache/remote/mf.jpg';
         $opts = array(
