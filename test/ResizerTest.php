@@ -353,5 +353,88 @@ class ResizerTest extends PHPUnit_Framework_TestCase {
         $resizer->doResize($imagePath);
     }
 
+    public function testInCache() {
+        $imagePath = './cache/remote/mf.jpg';
+        $configuration = TestUtils::mockConfiguration();
+        $newPath = $configuration->obtainOutputFilePath($imagePath);
+        $resizer = new Resizer($configuration);
+
+        $stub = $this->getMockBuilder('FileSystem')
+            ->getMock();
+        $stub->method('file_exists')
+            ->willReturn(true);
+        $resizer->injectFileSystem($stub);
+
+        $inCache = $resizer->isInCache($newPath, $imagePath);
+
+
+    }
+
+
+    public function testInCache_AndFresh() {
+        $imagePath = './cache/remote/mf.jpg';
+        $configuration = TestUtils::mockConfiguration();
+        $newPath = $configuration->obtainOutputFilePath($imagePath);
+        $resizer = new Resizer($configuration);
+
+        $stub = $this->getMockBuilder('FileSystem')
+            ->getMock();
+        $stub->method('file_exists')
+            ->willReturn(true);
+        $map = array(
+            array($imagePath, 500),
+            array($newPath, 1000)
+        );
+        $stub->expects($this->any())
+            ->method('filemtime')
+            ->will($this->returnValueMap($map));
+
+        $resizer->injectFileSystem($stub);
+
+        $inCache = $resizer->isInCache($newPath, $imagePath);
+
+        $this->assertEquals(true, $inCache);
+    }
+
+    public function testInCache_ButTooOld() {
+        $imagePath = './cache/remote/mf.jpg';
+        $configuration = TestUtils::mockConfiguration();
+        $newPath = $configuration->obtainOutputFilePath($imagePath);
+        $resizer = new Resizer($configuration);
+
+        $stub = $this->getMockBuilder('FileSystem')
+            ->getMock();
+        $stub->method('file_exists')
+            ->willReturn(true);
+        $map = array(
+            array($imagePath, 1000),
+            array($newPath, 500)
+        );
+        $stub->expects($this->any())
+            ->method('filemtime')
+            ->will($this->returnValueMap($map));
+        $resizer->injectFileSystem($stub);
+
+        $inCache = $resizer->isInCache($newPath, $imagePath);
+
+        $this->assertEquals(false, $inCache);
+    }
+
+    public function testNotInCache_NotExist() {
+        $imagePath = './cache/remote/mf.jpg';
+        $configuration = TestUtils::mockConfiguration();
+        $newPath = $configuration->obtainOutputFilePath($imagePath);
+        $resizer = new Resizer($configuration);
+
+        $stub = $this->getMockBuilder('FileSystem')
+            ->getMock();
+        $stub->method('file_exists')
+            ->willReturn(false);
+        $resizer->injectFileSystem($stub);
+
+        $inCache = $resizer->isInCache($newPath, $imagePath);
+
+        $this->assertEquals(false, $inCache);
+    }
 
 }

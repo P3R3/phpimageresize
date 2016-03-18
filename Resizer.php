@@ -119,6 +119,20 @@ class Resizer {
         }
     }
 
+    public function isInCache($path, $imagePath) {
+        $isInCache = false;
+        if($this->fileSystem->file_exists($path) == true):
+            $isInCache = true;
+            $origFileTime = date("YmdHis",$this->fileSystem->filemtime($imagePath));
+            $newFileTime = date("YmdHis",$this->fileSystem->filemtime($path));
+            if($newFileTime < $origFileTime): # Not using $opts['expire-time'] ??
+                $isInCache = false;
+            endif;
+        endif;
+
+        return $isInCache;
+    }
+
     public function doResize($imagePath) {
 
         $cmd = $this->resizeFrom($imagePath);
