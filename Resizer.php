@@ -26,81 +26,85 @@ class Resizer {
         $this->fileSystem = $fileSystem;
     }
 
-    private function defaultShellCommand($configuration, $imagePath, $newPath) {
-        $opts = $configuration->asHash();
-        $w = $configuration->obtainWidth();
-        $h = $configuration->obtainHeight();
-
-        $command = $configuration->obtainConvertPath() ." " . escapeshellarg($imagePath) .
-            " -thumbnail ". (!empty($h) ? 'x':'') . $w ."".
-            (isset($opts['maxOnly']) && $opts['maxOnly'] == true ? "\>" : "") .
-            " -quality ". escapeshellarg($opts['quality']) ." ". escapeshellarg($newPath);
-
-        return $command;
-    }
-
     private function isPanoramic($imagePath) {
         list($width,$height) = $this->fileSystem->getimagesize($imagePath);
         return $width > $height;
     }
 
-    private function composeResizeOptions($imagePath, $configuration) {
-        $opts = $configuration->asHash();
-        $w = $configuration->obtainWidth();
-        $h = $configuration->obtainHeight();
 
-        $resize = "x".$h;
+    private function defaultShellCommand() {
+        $command =
+            " -thumbnail "
+                . ($this->configuration->withHeight() ? 'x':'')
+                . $this->configuration->obtainWidth()
+                .($this->configuration->withMaxOnly()? "\>" : "") .
+            " -quality ". escapeshellarg($this->configuration->obtainQuality())
+            ;
 
-        $hasCrop = (true === $opts['crop']);
-
-        if(!$hasCrop && $this->isPanoramic($imagePath)):
-            $resize = $w;
-        endif;
-
-        if($hasCrop && !$this->isPanoramic($imagePath)):
-            $resize = $w;
-        endif;
-
-        return $resize;
+        return $command;
     }
 
-    private function commandWithScale($imagePath, $newPath, $configuration) {
-        $opts = $configuration->asHash();
-        $resize = $this->composeResizeOptions($imagePath, $configuration);
+    private function respectRatioArguments($imagePath) {
+        $resize = "x".$this->configuration->obtainHeight();
 
-        $cmd = $configuration->obtainConvertPath() ." ". escapeshellarg($imagePath) ." -resize ". escapeshellarg($resize) .
-            " -quality ". escapeshellarg($opts['quality']) . " " . escapeshellarg($newPath);
+        if(!($this->configuration->withCrop()) && $this->isPanoramic($imagePath)):
+            $resize = $this->configuration->obtainWidth();
+        endif;
+
+        if($this->configuration->withCrop() && !$this->isPanoramic($imagePath)):
+            $resize = $this->configuration->obtainWidth();
+        endif;
+
+        return " -resize ". escapeshellarg($resize);
+    }
+
+    private function commandWithScale() {
+        $cmd = " -quality ". escapeshellarg($this->configuration->obtainQuality());
 
         return $cmd;
     }
 
-   private function commandWithCrop($imagePath, $newPath, $configuration) {
-        $opts = $configuration->asHash();
-        $w = $configuration->obtainWidth();
-        $h = $configuration->obtainHeight();
-        $resize = $this->composeResizeOptions($imagePath, $configuration);
-
-        $cmd = $configuration->obtainConvertPath() ." ". escapeshellarg($imagePath) ." -resize ". escapeshellarg($resize) .
-            " -size ". escapeshellarg($w ."x". $h) .
-            " xc:". escapeshellarg($opts['canvas-color']) .
-            " +swap -gravity center -composite -quality ". escapeshellarg($opts['quality'])." ".escapeshellarg($newPath);
+   private function commandWithCrop() {
+        $cmd = " -size "
+                . escapeshellarg($this->configuration->obtainWidth() ."x". $this->configuration->obtainHeight())
+                ." xc:"
+                . escapeshellarg($this->configuration->obtainCanvasColor())
+                ." +swap -gravity center -composite -quality "
+                . escapeshellarg($this->configuration->obtainQuality())
+            ;
 
         return $cmd;
     }
 
-    public function doResize($imagePath, $newPath, $configuration) {
-        $opts = $configuration->asHash();
-        $w = $configuration->obtainWidth();
-        $h = $configuration->obtainHeight();
+    private function respectImageRatio() {
+        return  $this->configuration->withWidth()
+                and
+                $this->configuration->withHeight();
+    }
 
-        if(!empty($w) and !empty($h)):
-            $cmd = $this->commandWithCrop($imagePath, $newPath, $configuration);
-            if(true === $opts['scale']):
-                $cmd = $this->commandWithScale($imagePath, $newPath, $configuration);
+
+    private function resizeArguments($imagePath) {
+
+        if ($this->respectImageRatio()) {
+            $cmd=$this->respectRatioArguments($imagePath);
+            if($this->configuration->withScale()):
+                return $cmd . $this->commandWithScale();
+            else:
+                return $cmd . $this->commandWithCrop();
             endif;
-        else:
-            $cmd = $this->defaultShellCommand($configuration, $imagePath, $newPath);
-        endif;
+        } else {
+            return $this->defaultShellCommand();
+        }
+
+    }
+
+    public function doResize($imagePath) {
+
+        $cmd = $this->resizeFrom($imagePath);
+
+        $cmd.=$this->resizeArguments($imagePath);
+
+        $cmd.= $this->resizeTo($imagePath);
 
         $output=array();
         $return_code= $this->fileSystem->exec($cmd, $output);
@@ -108,6 +112,26 @@ class Resizer {
             error_log("Tried to execute : $cmd, return code: $return_code, output: " . print_r($output, true));
             throw new RuntimeException();
         }
+    }
+
+    /**
+     * @param $imagePath
+     * @return string
+     */
+    private function resizeFrom($imagePath)
+    {
+        return $this->configuration->obtainConvertPath()
+        . " "
+        . escapeshellarg($imagePath);
+    }
+
+    /**
+     * @param $imagePath
+     * @return string
+     */
+    private function resizeTo($imagePath)
+    {
+        return " " . escapeshellarg($this->configuration->obtainOutputFilePath($imagePath));
     }
 
 }

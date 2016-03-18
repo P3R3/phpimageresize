@@ -56,6 +56,19 @@ class ConfigurationTest extends PHPUnit_Framework_TestCase {
         $this->assertEquals('./cache/', $configuration->obtainOutputFolder());
     }
 
+    public function testObtainQuality() {
+        $configuration = TestUtils::mockConfiguration();
+
+        $this->assertEquals(90, $configuration->obtainQuality());
+    }
+
+
+    public function testObtainCanvasColor() {
+        $configuration = TestUtils::mockConfiguration();
+
+        $this->assertEquals('transparent', $configuration->obtainCanvasColor());
+    }
+
     public function obtainDownloadFolder() {
         $configuration = TestUtils::mockConfiguration();
 
@@ -110,6 +123,27 @@ class ConfigurationTest extends PHPUnit_Framework_TestCase {
         $configuration = new Configuration($opts);
 
         $this->assertEquals(false, $configuration->withScale());
+    }
+
+
+
+    public function testMaxOnly() {
+        $opts = array(
+            Configuration::MAX_ONLY_KEY => true
+        );
+        $opts=array_merge(TestUtils::mockRequired(), $opts);
+        $configuration = new Configuration($opts);
+
+        $this->assertEquals(true, $configuration->withMaxOnly());
+    }
+    public function testWithoutMaxOnly() {
+        $opts = array(
+            Configuration::MAX_ONLY_KEY => false
+        );
+        $opts=array_merge(TestUtils::mockRequired(), $opts);
+        $configuration = new Configuration($opts);
+
+        $this->assertEquals(false, $configuration->withMaxOnly());
     }
 
 

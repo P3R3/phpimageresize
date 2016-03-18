@@ -73,6 +73,15 @@ class Configuration {
         return $this->opts[self::HEIGHT_KEY];
     }
 
+    public function obtainQuality() {
+        return $this->opts[self::QUALITY_KEY];
+    }
+
+    public function obtainCanvasColor() {
+        return $this->opts[self::CANVAS_COLOR_KEY];
+    }
+
+
     public function obtainCacheMinutes() {
         return $this->opts[self::CACHE_MINUTES_KEY];
     }
@@ -92,13 +101,17 @@ class Configuration {
     }
 
     public function withCrop() {
-        return isset($this->opts[self::CROP_KEY]) && $this->opts[self::CROP_KEY] == true;
+        return isset($this->opts[self::CROP_KEY]) && $this->opts[self::CROP_KEY] === true;
     }
 
     public function withScale() {
-        return isset($this->opts[self::SCALE_KEY]) && $this->opts[self::SCALE_KEY] == true;
+        return isset($this->opts[self::SCALE_KEY]) && $this->opts[self::SCALE_KEY] === true;
     }
 
+
+    public function withMaxOnly() {
+        return isset($this->opts[self::MAX_ONLY_KEY]) && $this->opts[self::MAX_ONLY_KEY] == true ;
+    }
 
     public function obtainOutputFilePath($sourceFilePath) {
         if($this->obtainOutputFileName()) {
@@ -131,11 +144,11 @@ class Configuration {
 
     }
 
-    private function withWidth() {
+    public function withWidth() {
         return !empty($this->obtainWidth());
     }
 
-    private function withHeight() {
+    public function withHeight() {
         return !empty($this->obtainHeight());
     }
 

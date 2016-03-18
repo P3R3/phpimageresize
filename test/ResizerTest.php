@@ -60,7 +60,7 @@ class ResizerTest extends PHPUnit_Framework_TestCase {
         $resizer = new Resizer($configuration);
         $resizer->injectFileSystem($stub);
 
-        $resizer->doResize($imagePath, $configuration->obtainOutputFilePath($imagePath), $configuration);
+        $resizer->doResize($imagePath);
     }
     public function testDoResize_WhenPanoramicAndAllInformedExceptScale() {
         $imagePath = './cache/remote/mf.jpg';
@@ -92,7 +92,7 @@ class ResizerTest extends PHPUnit_Framework_TestCase {
         $resizer = new Resizer($configuration);
         $resizer->injectFileSystem($stub);
 
-        $resizer->doResize($imagePath, $configuration->obtainOutputFilePath($imagePath), $configuration);
+        $resizer->doResize($imagePath);
     }
 
     public function testDoResize_WhenPanoramicAndAllInformedExceptCropAndScale() {
@@ -125,7 +125,7 @@ class ResizerTest extends PHPUnit_Framework_TestCase {
         $resizer = new Resizer($configuration);
         $resizer->injectFileSystem($stub);
 
-        $resizer->doResize($imagePath, $configuration->obtainOutputFilePath($imagePath), $configuration);
+        $resizer->doResize($imagePath);
     }
 
 
@@ -162,7 +162,7 @@ class ResizerTest extends PHPUnit_Framework_TestCase {
         $resizer = new Resizer($configuration);
         $resizer->injectFileSystem($stub);
 
-        $resizer->doResize($imagePath, $configuration->obtainOutputFilePath($imagePath), $configuration);
+        $resizer->doResize($imagePath);
     }
     public function testDoResize_WhenAllInformedAndPanoramic() {
         $imagePath = './cache/remote/mf.jpg';
@@ -194,7 +194,7 @@ class ResizerTest extends PHPUnit_Framework_TestCase {
         $resizer = new Resizer($configuration);
         $resizer->injectFileSystem($stub);
 
-        $resizer->doResize($imagePath, $configuration->obtainOutputFilePath($imagePath), $configuration);
+        $resizer->doResize($imagePath);
     }
 
     public function testDoResize_WhenPanoramicAndAllInformedExceptCrop() {
@@ -227,7 +227,7 @@ class ResizerTest extends PHPUnit_Framework_TestCase {
         $resizer = new Resizer($configuration);
         $resizer->injectFileSystem($stub);
 
-        $resizer->doResize($imagePath, $configuration->obtainOutputFilePath($imagePath), $configuration);
+        $resizer->doResize($imagePath);
     }
 
     public function testDoResize_WhenAllInformedExceptWidth() {
@@ -255,7 +255,7 @@ class ResizerTest extends PHPUnit_Framework_TestCase {
         $resizer = new Resizer($configuration);
         $resizer->injectFileSystem($stub);
 
-        $resizer->doResize($imagePath, $configuration->obtainOutputFilePath($imagePath), $configuration);
+        $resizer->doResize($imagePath);
     }
     public function testDoResize_WhenAllInformedExceptHeight() {
         $imagePath = './cache/remote/mf.jpg';
@@ -282,7 +282,7 @@ class ResizerTest extends PHPUnit_Framework_TestCase {
         $resizer = new Resizer($configuration);
         $resizer->injectFileSystem($stub);
 
-        $resizer->doResize($imagePath, $configuration->obtainOutputFilePath($imagePath), $configuration);
+        $resizer->doResize($imagePath);
     }
     public function testDoResize_WhenDefaultExceptWidth() {
         $imagePath = './cache/remote/mf.jpg';
@@ -306,7 +306,7 @@ class ResizerTest extends PHPUnit_Framework_TestCase {
         $resizer = new Resizer($configuration);
         $resizer->injectFileSystem($stub);
 
-        $resizer->doResize($imagePath, $configuration->obtainOutputFilePath($imagePath), $configuration);
+        $resizer->doResize($imagePath);
     }
     public function testDoResize_WhenDefaultExceptHeight() {
         $imagePath = './cache/remote/mf.jpg';
@@ -330,7 +330,7 @@ class ResizerTest extends PHPUnit_Framework_TestCase {
         $resizer = new Resizer($configuration);
         $resizer->injectFileSystem($stub);
 
-        $resizer->doResize($imagePath, $configuration->obtainOutputFilePath($imagePath), $configuration);
+        $resizer->doResize($imagePath);
     }
 
     public function testDoResize_WhenDefault() {
@@ -352,7 +352,7 @@ class ResizerTest extends PHPUnit_Framework_TestCase {
         $resizer = new Resizer($configuration);
         $resizer->injectFileSystem($stub);
 
-        $resizer->doResize($imagePath, $configuration->obtainOutputFilePath($imagePath), $configuration);
+        $resizer->doResize($imagePath);
     }
 
 
