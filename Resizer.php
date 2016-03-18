@@ -119,7 +119,9 @@ class Resizer {
         }
     }
 
-    public function isInCache($path, $imagePath) {
+    public function isInCache($imagePath) {
+        $path = $this->configuration->obtainOutputFilePath($imagePath);
+
         $isInCache = false;
         if($this->fileSystem->file_exists($path) == true):
             $isInCache = true;

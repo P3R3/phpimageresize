@@ -353,23 +353,6 @@ class ResizerTest extends PHPUnit_Framework_TestCase {
         $resizer->doResize($imagePath);
     }
 
-    public function testInCache() {
-        $imagePath = './cache/remote/mf.jpg';
-        $configuration = TestUtils::mockConfiguration();
-        $newPath = $configuration->obtainOutputFilePath($imagePath);
-        $resizer = new Resizer($configuration);
-
-        $stub = $this->getMockBuilder('FileSystem')
-            ->getMock();
-        $stub->method('file_exists')
-            ->willReturn(true);
-        $resizer->injectFileSystem($stub);
-
-        $inCache = $resizer->isInCache($newPath, $imagePath);
-
-
-    }
-
 
     public function testInCache_AndFresh() {
         $imagePath = './cache/remote/mf.jpg';
@@ -391,7 +374,7 @@ class ResizerTest extends PHPUnit_Framework_TestCase {
 
         $resizer->injectFileSystem($stub);
 
-        $inCache = $resizer->isInCache($newPath, $imagePath);
+        $inCache = $resizer->isInCache($imagePath);
 
         $this->assertEquals(true, $inCache);
     }
@@ -415,7 +398,7 @@ class ResizerTest extends PHPUnit_Framework_TestCase {
             ->will($this->returnValueMap($map));
         $resizer->injectFileSystem($stub);
 
-        $inCache = $resizer->isInCache($newPath, $imagePath);
+        $inCache = $resizer->isInCache($imagePath);
 
         $this->assertEquals(false, $inCache);
     }
@@ -423,7 +406,6 @@ class ResizerTest extends PHPUnit_Framework_TestCase {
     public function testNotInCache_NotExist() {
         $imagePath = './cache/remote/mf.jpg';
         $configuration = TestUtils::mockConfiguration();
-        $newPath = $configuration->obtainOutputFilePath($imagePath);
         $resizer = new Resizer($configuration);
 
         $stub = $this->getMockBuilder('FileSystem')
@@ -432,7 +414,7 @@ class ResizerTest extends PHPUnit_Framework_TestCase {
             ->willReturn(false);
         $resizer->injectFileSystem($stub);
 
-        $inCache = $resizer->isInCache($newPath, $imagePath);
+        $inCache = $resizer->isInCache($imagePath);
 
         $this->assertEquals(false, $inCache);
     }
