@@ -45,7 +45,7 @@ class ResizerTest extends PHPUnit_Framework_TestCase {
             ->willReturn('df1555ec0c2d7fcad3a03770f9aa238a');
         $stub->method('getExtension')
             ->willReturn('.jpg');
-        $stub->method('exec')
+        $stub->expects($this->once())->method('exec')
             ->with('convert "./cache/remote/mf.jpg" -resize "125" -size "125x126" xc:"red" +swap -gravity center -composite -quality "180" "./cache/df1555ec0c2d7fcad3a03770f9aa238a_w125_h126_cp.jpg"', array())
             ->willReturn(0);
         $stub->method('getimagesize')
@@ -57,7 +57,10 @@ class ResizerTest extends PHPUnit_Framework_TestCase {
         $resizer = new Resizer($configuration);
         $resizer->injectFileSystem($stub);
 
-        $resizer->doResize($imagePath);
+        $outputFilePath = $resizer->doResize($imagePath);
+
+        $expected = $configuration->obtainOutputFilePath($imagePath);
+        $this->assertEquals($expected, $outputFilePath);
     }
 
     public function testDoResize_WhenPanoramicAndAllInformedExceptScale() {
@@ -78,7 +81,7 @@ class ResizerTest extends PHPUnit_Framework_TestCase {
             ->willReturn('df1555ec0c2d7fcad3a03770f9aa238a');
         $stub->method('getExtension')
             ->willReturn('.jpg');
-        $stub->method('exec')
+        $stub->expects($this->once())->method('exec')
             ->with('convert "./cache/remote/mf.jpg" -resize "x126" -size "125x126" xc:"red" +swap -gravity center -composite -quality "180" "./cache/df1555ec0c2d7fcad3a03770f9aa238a_w125_h126_cp.jpg"', array())
             ->willReturn(0);
         $stub->method('getimagesize')
@@ -90,7 +93,10 @@ class ResizerTest extends PHPUnit_Framework_TestCase {
         $resizer = new Resizer($configuration);
         $resizer->injectFileSystem($stub);
 
-        $resizer->doResize($imagePath);
+        $outputFilePath = $resizer->doResize($imagePath);
+
+        $expected = $configuration->obtainOutputFilePath($imagePath);
+        $this->assertEquals($expected, $outputFilePath);
     }
 
     public function testDoResize_WhenPanoramicAndAllInformedExceptCropAndScale() {
@@ -111,7 +117,7 @@ class ResizerTest extends PHPUnit_Framework_TestCase {
             ->willReturn('df1555ec0c2d7fcad3a03770f9aa238a');
         $stub->method('getExtension')
             ->willReturn('.jpg');
-        $stub->method('exec')
+        $stub->expects($this->once())->method('exec')
             ->with('convert "./cache/remote/mf.jpg" -resize "125" -size "125x126" xc:"red" +swap -gravity center -composite -quality "180" "./cache/df1555ec0c2d7fcad3a03770f9aa238a_w125_h126.jpg"', array())
             ->willReturn(0);
         $stub->method('getimagesize')
@@ -123,7 +129,10 @@ class ResizerTest extends PHPUnit_Framework_TestCase {
         $resizer = new Resizer($configuration);
         $resizer->injectFileSystem($stub);
 
-        $resizer->doResize($imagePath);
+        $outputFilePath = $resizer->doResize($imagePath);
+
+        $expected = $configuration->obtainOutputFilePath($imagePath);
+        $this->assertEquals($expected, $outputFilePath);
     }
 
     public function testDoResize_WhenAllInformedAndNotPanoramic() {
@@ -144,7 +153,7 @@ class ResizerTest extends PHPUnit_Framework_TestCase {
             ->willReturn('df1555ec0c2d7fcad3a03770f9aa238a');
         $stub->method('getExtension')
             ->willReturn('.jpg');
-        $stub->method('exec')
+        $stub->expects($this->once())->method('exec')
             ->with('convert "./cache/remote/mf.jpg" -resize "125" -quality "180" "./cache/df1555ec0c2d7fcad3a03770f9aa238a_w125_h126_cp_sc.jpg"', array())
             ->willReturn(0);
         $stub->method('getimagesize')
@@ -156,7 +165,10 @@ class ResizerTest extends PHPUnit_Framework_TestCase {
         $resizer = new Resizer($configuration);
         $resizer->injectFileSystem($stub);
 
-        $resizer->doResize($imagePath);
+        $outputFilePath = $resizer->doResize($imagePath);
+
+        $expected = $configuration->obtainOutputFilePath($imagePath);
+        $this->assertEquals($expected, $outputFilePath);
     }
 
     public function testDoResize_WhenAllInformedAndPanoramic() {
@@ -177,7 +189,7 @@ class ResizerTest extends PHPUnit_Framework_TestCase {
             ->willReturn('df1555ec0c2d7fcad3a03770f9aa238a');
         $stub->method('getExtension')
             ->willReturn('.jpg');
-        $stub->method('exec')
+        $stub->expects($this->once())->method('exec')
             ->with('convert "./cache/remote/mf.jpg" -resize "x126" -quality "180" "./cache/df1555ec0c2d7fcad3a03770f9aa238a_w125_h126_cp_sc.jpg"', array())
             ->willReturn(0);
         $stub->method('getimagesize')
@@ -189,7 +201,10 @@ class ResizerTest extends PHPUnit_Framework_TestCase {
         $resizer = new Resizer($configuration);
         $resizer->injectFileSystem($stub);
 
-        $resizer->doResize($imagePath);
+        $outputFilePath = $resizer->doResize($imagePath);
+
+        $expected = $configuration->obtainOutputFilePath($imagePath);
+        $this->assertEquals($expected, $outputFilePath);
     }
 
     public function testDoResize_WhenPanoramicAndAllInformedExceptCrop() {
@@ -210,7 +225,7 @@ class ResizerTest extends PHPUnit_Framework_TestCase {
             ->willReturn('df1555ec0c2d7fcad3a03770f9aa238a');
         $stub->method('getExtension')
             ->willReturn('.jpg');
-        $stub->method('exec')
+        $stub->expects($this->once())->method('exec')
             ->with('convert "./cache/remote/mf.jpg" -resize "125" -quality "180" "./cache/df1555ec0c2d7fcad3a03770f9aa238a_w125_h126_sc.jpg"', array())
             ->willReturn(0);
         $stub->method('getimagesize')
@@ -222,7 +237,10 @@ class ResizerTest extends PHPUnit_Framework_TestCase {
         $resizer = new Resizer($configuration);
         $resizer->injectFileSystem($stub);
 
-        $resizer->doResize($imagePath);
+        $outputFilePath = $resizer->doResize($imagePath);
+
+        $expected = $configuration->obtainOutputFilePath($imagePath);
+        $this->assertEquals($expected, $outputFilePath);
     }
 
     public function testDoResize_WhenAllInformedExceptWidth() {
@@ -242,7 +260,7 @@ class ResizerTest extends PHPUnit_Framework_TestCase {
             ->willReturn('df1555ec0c2d7fcad3a03770f9aa238a');
         $stub->method('getExtension')
             ->willReturn('.jpg');
-        $stub->method('exec')
+        $stub->expects($this->once())->method('exec')
             ->with('convert "./cache/remote/mf.jpg" -thumbnail x\> -quality "180" "./cache/df1555ec0c2d7fcad3a03770f9aa238a_h125_cp_sc.jpg"', array())
             ->willReturn(0);
         $configuration = new Configuration($opts);
@@ -250,7 +268,10 @@ class ResizerTest extends PHPUnit_Framework_TestCase {
         $resizer = new Resizer($configuration);
         $resizer->injectFileSystem($stub);
 
-        $resizer->doResize($imagePath);
+        $outputFilePath = $resizer->doResize($imagePath);
+
+        $expected = $configuration->obtainOutputFilePath($imagePath);
+        $this->assertEquals($expected, $outputFilePath);
     }
 
     public function testDoResize_WhenAllInformedExceptHeight() {
@@ -270,7 +291,7 @@ class ResizerTest extends PHPUnit_Framework_TestCase {
             ->willReturn('df1555ec0c2d7fcad3a03770f9aa238a');
         $stub->method('getExtension')
             ->willReturn('.jpg');
-        $stub->method('exec')
+        $stub->expects($this->once())->method('exec')
             ->with('convert "./cache/remote/mf.jpg" -thumbnail 125\> -quality "180" "./cache/df1555ec0c2d7fcad3a03770f9aa238a_w125_cp_sc.jpg"', array())
             ->willReturn(0);
         $configuration = new Configuration($opts);
@@ -278,7 +299,10 @@ class ResizerTest extends PHPUnit_Framework_TestCase {
         $resizer = new Resizer($configuration);
         $resizer->injectFileSystem($stub);
 
-        $resizer->doResize($imagePath);
+        $outputFilePath = $resizer->doResize($imagePath);
+
+        $expected = $configuration->obtainOutputFilePath($imagePath);
+        $this->assertEquals($expected, $outputFilePath);
     }
 
     public function testDoResize_WhenDefaultExceptWidth() {
@@ -295,7 +319,7 @@ class ResizerTest extends PHPUnit_Framework_TestCase {
             ->willReturn('df1555ec0c2d7fcad3a03770f9aa238a');
         $stub->method('getExtension')
             ->willReturn('.jpg');
-        $stub->method('exec')
+        $stub->expects($this->once())->method('exec')
             ->with('convert "./cache/remote/mf.jpg" -thumbnail x -quality "90" "/out/file"', array())
             ->willReturn(0);
         $configuration = new Configuration($opts);
@@ -303,7 +327,10 @@ class ResizerTest extends PHPUnit_Framework_TestCase {
         $resizer = new Resizer($configuration);
         $resizer->injectFileSystem($stub);
 
-        $resizer->doResize($imagePath);
+        $outputFilePath = $resizer->doResize($imagePath);
+
+        $expected = $configuration->obtainOutputFilePath($imagePath);
+        $this->assertEquals($expected, $outputFilePath);
     }
 
     public function testDoResize_WhenDefaultExceptHeight() {
@@ -320,7 +347,7 @@ class ResizerTest extends PHPUnit_Framework_TestCase {
             ->willReturn('df1555ec0c2d7fcad3a03770f9aa238a');
         $stub->method('getExtension')
             ->willReturn('.jpg');
-        $stub->method('exec')
+        $stub->expects($this->once())->method('exec')
             ->with('convert "./cache/remote/mf.jpg" -thumbnail 800 -quality "90" "/out/file"', array())
             ->willReturn(0);
         $configuration = new Configuration($opts);
@@ -328,7 +355,10 @@ class ResizerTest extends PHPUnit_Framework_TestCase {
         $resizer = new Resizer($configuration);
         $resizer->injectFileSystem($stub);
 
-        $resizer->doResize($imagePath);
+        $outputFilePath = $resizer->doResize($imagePath);
+
+        $expected = $configuration->obtainOutputFilePath($imagePath);
+        $this->assertEquals($expected, $outputFilePath);
     }
 
     public function testDoResize_WhenDefault() {
@@ -342,7 +372,7 @@ class ResizerTest extends PHPUnit_Framework_TestCase {
             ->willReturn('df1555ec0c2d7fcad3a03770f9aa238a');
         $stub->method('getExtension')
             ->willReturn('.jpg');
-        $stub->method('exec')
+        $stub->expects($this->once())->method('exec')
             ->with('convert "./cache/remote/mf.jpg" -resize "x600" -size "800x600" xc:"transparent" +swap -gravity center -composite -quality "90" "/out/file"', array())
             ->willReturn(0);
         $configuration = new Configuration($opts);
@@ -350,20 +380,24 @@ class ResizerTest extends PHPUnit_Framework_TestCase {
         $resizer = new Resizer($configuration);
         $resizer->injectFileSystem($stub);
 
-        $resizer->doResize($imagePath);
+        $outputFilePath = $resizer->doResize($imagePath);
+
+        $expected = $configuration->obtainOutputFilePath($imagePath);
+        $this->assertEquals($expected, $outputFilePath);
     }
 
 
-    public function testInCache_AndFresh() {
+    public function testDoResize_InCache_AndFresh() {
         $imagePath = './cache/remote/mf.jpg';
-        $configuration = TestUtils::mockConfiguration();
-        $newPath = $configuration->obtainOutputFilePath($imagePath);
-        $resizer = new Resizer($configuration);
+        $opts=TestUtils::mockRequired();
+        $configuration = new Configuration($opts);
 
         $stub = $this->getMockBuilder('FileSystem')
             ->getMock();
         $stub->method('file_exists')
             ->willReturn(true);
+        $newPath = $configuration->obtainOutputFilePath($imagePath);
+
         $map = array(
             array($imagePath, 500),
             array($newPath, 1000)
@@ -371,24 +405,33 @@ class ResizerTest extends PHPUnit_Framework_TestCase {
         $stub->expects($this->any())
             ->method('filemtime')
             ->will($this->returnValueMap($map));
+        $stub->expects($this->never())->method('exec');
 
+        $configuration->injectFileSystem($stub);
+        $resizer = new Resizer($configuration);
         $resizer->injectFileSystem($stub);
 
-        $inCache = $resizer->isInCache($imagePath);
+        $outputFilePath = $resizer->doResize($imagePath);
 
-        $this->assertEquals(true, $inCache);
+        $expected = $configuration->obtainOutputFilePath($imagePath);
+        $this->assertEquals($expected, $outputFilePath);
     }
 
-    public function testInCache_ButTooOld() {
+
+
+
+
+
+    public function testDoResize_InCache_ButTooOld() {
         $imagePath = './cache/remote/mf.jpg';
-        $configuration = TestUtils::mockConfiguration();
-        $newPath = $configuration->obtainOutputFilePath($imagePath);
-        $resizer = new Resizer($configuration);
+        $opts=TestUtils::mockRequired();
+        $configuration = new Configuration($opts);
 
         $stub = $this->getMockBuilder('FileSystem')
             ->getMock();
         $stub->method('file_exists')
             ->willReturn(true);
+        $newPath = $configuration->obtainOutputFilePath($imagePath);
         $map = array(
             array($imagePath, 1000),
             array($newPath, 500)
@@ -396,27 +439,51 @@ class ResizerTest extends PHPUnit_Framework_TestCase {
         $stub->expects($this->any())
             ->method('filemtime')
             ->will($this->returnValueMap($map));
+
+        $stub->method('md5_file')
+            ->willReturn('df1555ec0c2d7fcad3a03770f9aa238a');
+        $stub->method('getExtension')
+            ->willReturn('.jpg');
+        $stub->expects($this->once())->method('exec')
+            ->with('convert "./cache/remote/mf.jpg" -resize "x600" -size "800x600" xc:"transparent" +swap -gravity center -composite -quality "90" "/out/file"', array())
+            ->willReturn(0);
+        $configuration->injectFileSystem($stub);
+        $resizer = new Resizer($configuration);
         $resizer->injectFileSystem($stub);
 
-        $inCache = $resizer->isInCache($imagePath);
+        $outputFilePath = $resizer->doResize($imagePath);
 
-        $this->assertEquals(false, $inCache);
+        $expected = $configuration->obtainOutputFilePath($imagePath);
+        $this->assertEquals($expected, $outputFilePath);
     }
 
-    public function testNotInCache_NotExist() {
+
+    public function testDoResize_InCache_NotExist() {
         $imagePath = './cache/remote/mf.jpg';
-        $configuration = TestUtils::mockConfiguration();
-        $resizer = new Resizer($configuration);
+        $opts=TestUtils::mockRequired();
+        $configuration = new Configuration($opts);
 
         $stub = $this->getMockBuilder('FileSystem')
             ->getMock();
         $stub->method('file_exists')
             ->willReturn(false);
+
+        $stub->method('md5_file')
+            ->willReturn('df1555ec0c2d7fcad3a03770f9aa238a');
+        $stub->method('getExtension')
+            ->willReturn('.jpg');
+        $stub->expects($this->once())->method('exec')
+            ->with('convert "./cache/remote/mf.jpg" -resize "x600" -size "800x600" xc:"transparent" +swap -gravity center -composite -quality "90" "/out/file"', array())
+            ->willReturn(0);
+        $configuration->injectFileSystem($stub);
+        $resizer = new Resizer($configuration);
         $resizer->injectFileSystem($stub);
 
-        $inCache = $resizer->isInCache($imagePath);
+        $outputFilePath = $resizer->doResize($imagePath);
 
-        $this->assertEquals(false, $inCache);
+        $expected = $configuration->obtainOutputFilePath($imagePath);
+        $this->assertEquals($expected, $outputFilePath);
     }
+
 
 }

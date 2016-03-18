@@ -119,31 +119,42 @@ class Resizer {
         }
     }
 
-    public function isInCache($imagePath) {
-        $path = $this->configuration->obtainOutputFilePath($imagePath);
+    private function isInCache($outputFilePath, $imagePath) {
+        if($this->notExists($outputFilePath)) {
+            return false;
+        }
 
-        $isInCache = false;
-        if($this->fileSystem->file_exists($path) == true):
-            $isInCache = true;
-            $origFileTime = date("YmdHis",$this->fileSystem->filemtime($imagePath));
-            $newFileTime = date("YmdHis",$this->fileSystem->filemtime($path));
-            if($newFileTime < $origFileTime): # Not using $opts['expire-time'] ??
-                $isInCache = false;
-            endif;
-        endif;
+        $origFileTime = date("YmdHis",$this->fileSystem->filemtime($imagePath));
+        $newFileTime = date("YmdHis",$this->fileSystem->filemtime($outputFilePath));
 
-        return $isInCache;
+        return ($newFileTime >= $origFileTime);
     }
 
     public function doResize($imagePath) {
+        $ouputFilePath = $this->configuration->obtainOutputFilePath($imagePath);
+
+        if ($this->isInCache($ouputFilePath, $imagePath)) {
+            return $ouputFilePath;
+        }
 
         $cmd = $this->resizeFrom($imagePath);
 
         $cmd.=$this->resizeArguments($this->isPanoramic($imagePath));
 
-        $cmd.= $this->resizeTo($this->configuration->obtainOutputFilePath($imagePath));
+        $cmd.= $this->resizeTo($ouputFilePath);
 
         $this->executeCommand($cmd);
+
+        return $ouputFilePath;
+    }
+
+    /**
+     * @param $outputFilePath
+     * @return bool
+     */
+    private function notExists($outputFilePath)
+    {
+        return !$this->fileSystem->file_exists($outputFilePath);
     }
 
 }
