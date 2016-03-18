@@ -24,88 +24,6 @@ function isInCache($path, $imagePath) {
 
 
 
-function defaultShellCommand($configuration, $imagePath, $newPath) {
-	$opts = $configuration->asHash();
-	$w = $configuration->obtainWidth();
-	$h = $configuration->obtainHeight();
-
-	$command = $configuration->obtainConvertPath() ." " . escapeshellarg($imagePath) .
-	" -thumbnail ". (!empty($h) ? 'x':'') . $w ."".
-	(isset($opts['maxOnly']) && $opts['maxOnly'] == true ? "\>" : "") .
-	" -quality ". escapeshellarg($opts['quality']) ." ". escapeshellarg($newPath);
-
-	return $command;
-}
-
-function isPanoramic($imagePath) {
-	list($width,$height) = getimagesize($imagePath);
-	return $width > $height;
-}
-
-function composeResizeOptions($imagePath, $configuration) {
-	$opts = $configuration->asHash();
-	$w = $configuration->obtainWidth();
-	$h = $configuration->obtainHeight();
-
-	$resize = "x".$h;
-
-	$hasCrop = (true === $opts['crop']);
-
-	if(!$hasCrop && isPanoramic($imagePath)):
-		$resize = $w;
-	endif;
-
-	if($hasCrop && !isPanoramic($imagePath)):
-		$resize = $w;
-	endif;
-
-	return $resize;
-}
-
-function commandWithScale($imagePath, $newPath, $configuration) {
-	$opts = $configuration->asHash();
-	$resize = composeResizeOptions($imagePath, $configuration);
-
-	$cmd = $configuration->obtainConvertPath() ." ". escapeshellarg($imagePath) ." -resize ". escapeshellarg($resize) .
-		" -quality ". escapeshellarg($opts['quality']) . " " . escapeshellarg($newPath);
-
-	return $cmd;
-}
-
-function commandWithCrop($imagePath, $newPath, $configuration) {
-	$opts = $configuration->asHash();
-	$w = $configuration->obtainWidth();
-	$h = $configuration->obtainHeight();
-	$resize = composeResizeOptions($imagePath, $configuration);
-
-	$cmd = $configuration->obtainConvertPath() ." ". escapeshellarg($imagePath) ." -resize ". escapeshellarg($resize) .
-		" -size ". escapeshellarg($w ."x". $h) .
-		" xc:". escapeshellarg($opts['canvas-color']) .
-		" +swap -gravity center -composite -quality ". escapeshellarg($opts['quality'])." ".escapeshellarg($newPath);
-
-	return $cmd;
-}
-
-function doResize($imagePath, $newPath, $configuration) {
-	$opts = $configuration->asHash();
-	$w = $configuration->obtainWidth();
-	$h = $configuration->obtainHeight();
-
-	if(!empty($w) and !empty($h)):
-		$cmd = commandWithCrop($imagePath, $newPath, $configuration);
-		if(true === $opts['scale']):
-			$cmd = commandWithScale($imagePath, $newPath, $configuration);
-		endif;
-	else:
-		$cmd = defaultShellCommand($configuration, $imagePath, $newPath);
-	endif;
-
-	$c = exec($cmd, $output, $return_code);
-	if($return_code != 0) {
-		error_log("Tried to execute : $cmd, return code: $return_code, output: " . print_r($output, true));
-		throw new RuntimeException();
-	}
-}
 
 function resize($urlImage,$opts=null){
 
@@ -116,11 +34,6 @@ function resize($urlImage,$opts=null){
     }
 
     $httpUrlImage = new HttpUrlImage($urlImage);
-
-
-    //$resizer = new Resizer($httpUrlImage, $configuration);
-
-	// This has to be done in resizer resize
 
 	try {
         $downloadFolder = $configuration->obtainDownloadFolder();
@@ -137,8 +50,9 @@ function resize($urlImage,$opts=null){
     $create = !isInCache($newPath, $sourceFilePath);
 
 	if($create == true):
-		try {
-			doResize($sourceFilePath, $newPath, $configuration);
+        try {
+            $resizer = new Resizer($configuration);
+            $resizer->doResize($sourceFilePath);
 		} catch (Exception $e) {
 			return 'cannot resize the image';
 		}
